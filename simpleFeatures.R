@@ -16,17 +16,22 @@ lead <- lead %>%
   select(geoID, pctElevated) %>%
   mutate(pctElevated = pctElevated*.01)
 
-# load shapefile
-stlTracts <- st_read('stlTract.shp', stringsAsFactors = FALSE)
+# load shapefiles
+boundary <- st_read('BOUNDARY_City.shp', stringsAsFactors = FALSE)
+hydro <- st_read('HYDRO_AreaWater.shp', stringsAsFactors = FALSE)
+tracts <- st_read('DEMOS_Tracts10.shp', stringsAsFactors = FALSE)
 
 # join tabular and geometric data
-leadMap <- left_join(stlTracts, lead, by = c("GEOID" = "geoID"))
+leadMap <- left_join(tracts, lead, by = c("GEOID" = "geoID"))
 
 # remove tabular data frame
 rm(lead)
 
-ggplot(data = leadMap) +
-  geom_sf(aes(fill = pctElevated), color = NA) + 
+# make map
+ggplot() +
+  geom_sf(data = leadMap, aes(fill = pctElevated), color = NA) + 
+  geom_sf(data = hydro, fill = "#72bcd4", color = "#72bcd4") + 
+  geom_sf(data = boundary, fill = NA) +
   scale_fill_distiller(palette = "Purples", trans = "reverse") +
   guides(fill = guide_legend(reverse = TRUE)) +
   labs(
@@ -34,3 +39,5 @@ ggplot(data = leadMap) +
     subtitle = "St. Louis, MO",
     fill = "% Elevated"
     ) 
+
+
