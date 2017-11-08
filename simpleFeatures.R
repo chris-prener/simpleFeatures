@@ -14,12 +14,12 @@ lead <- stlLead
 lead <- lead %>%
   mutate(geoID = as.character(geoID)) %>%
   select(geoID, pctElevated) %>%
-  mutate(pctElevated = pctElevated*.01)
+  mutate(PCTELE = pctElevated*.01)
 
 # load shapefiles
-boundary <- st_read('BOUNDARY_City.shp', stringsAsFactors = FALSE)
-hydro <- st_read('HYDRO_AreaWater.shp', stringsAsFactors = FALSE)
-tracts <- st_read('DEMOS_Tracts10.shp', stringsAsFactors = FALSE)
+boundary <- st_read("Data/BOUNDARY_City.shp", stringsAsFactors = FALSE)
+hydro <- st_read("Data/HYDRO_AreaWater.shp", stringsAsFactors = FALSE)
+tracts <- st_read("Data/DEMOS_Tracts10.shp", stringsAsFactors = FALSE)
 
 # join tabular and geometric data
 leadMap <- left_join(tracts, lead, by = c("GEOID" = "geoID"))
@@ -29,7 +29,7 @@ rm(lead)
 
 # make map
 ggplot() +
-  geom_sf(data = leadMap, aes(fill = pctElevated), color = NA) + 
+  geom_sf(data = leadMap, aes(fill = PCTELE), color = NA) + 
   geom_sf(data = hydro, fill = "#72bcd4", color = "#72bcd4") + 
   geom_sf(data = boundary, fill = NA) +
   scale_fill_distiller(palette = "Purples", trans = "reverse") +
@@ -40,4 +40,8 @@ ggplot() +
     fill = "% Elevated"
     ) 
 
+# save map
+ggsave("Output/stlLeadMap.png", dpi = 300)
 
+# save shapefile
+st_write(leadMap, "Output/HEALTH_leadTestByTract.shp")
