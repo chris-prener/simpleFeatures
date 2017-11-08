@@ -13,9 +13,9 @@ lead <- stlLead
 # prepare for join
 lead <- lead %>%
   mutate(geoID = as.character(geoID)) %>%
-  select(geoID, pctElevated) %>%
-  mutate(PCTELE = pctElevated*.01)
-
+  mutate(PCTELE = pctElevated*.01) %>%
+  select(geoID, PCTELE)
+  
 # load shapefiles
 boundary <- st_read("Data/BOUNDARY_City.shp", stringsAsFactors = FALSE)
 hydro <- st_read("Data/HYDRO_AreaWater.shp", stringsAsFactors = FALSE)
