@@ -7,8 +7,6 @@ library(scales)
 library(ggplot2)      # plotting
 library(dplyr)        # data wrangling
 
-library(prener)       # theme
-
 # load data from package into global environment
 lead <- stlLead
 
@@ -24,6 +22,9 @@ stlTracts <- st_read('stlTract.shp', stringsAsFactors = FALSE)
 # join tabular and geometric data
 leadMap <- left_join(stlTracts, lead, by = c("GEOID" = "geoID"))
 
+# remove tabular data frame
+rm(lead)
+
 ggplot(data = leadMap) +
   geom_sf(aes(fill = pctElevated), color = NA) + 
   scale_fill_distiller(palette = "Purples", trans = "reverse") +
@@ -32,7 +33,4 @@ ggplot(data = leadMap) +
     title = "Blood Lead Level Tests",
     subtitle = "St. Louis, MO",
     fill = "% Elevated"
-    ) +
-  cp_sequoiaTheme(map = TRUE) 
-
-cp_plotSave("testMap.png", preset = "lg", dpi = 500)
+    ) 
