@@ -13,7 +13,10 @@ lead <- stlLead
 lead <- lead %>%
   mutate(geoID = as.character(geoID)) %>%
   mutate(PCTELE = pctElevated*.01) %>%
-  select(geoID, PCTELE)
+  mutate(WHITE = white) %>%
+  mutate(BLACK = black) %>%
+  mutate(POVERTY = povertyTot) %>%
+  select(geoID, PCTELE, WHITE, BLACK, POVERTY)
 
 # load shapefiles
 tracts <- st_read("Data/DEMOS_Tracts10.shp", stringsAsFactors = FALSE)
@@ -36,6 +39,21 @@ leaflet(leadMap) %>%
   addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
               opacity = 1.0, fillOpacity = 0.5,
               fillColor = ~colorQuantile("Purples", PCTELE)(PCTELE),
+              popup = ~htmlEscape(tract_popup), 
+              highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                  bringToFront = TRUE))
+
+# define popup text
+tract_popup <- paste0("Number of white residents in ",
+                      leadMap$NAMELSAD, ": ",
+                      leadMap$WHITE)
+
+# leaflet object
+leaflet(leadMap) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+              opacity = 1.0, fillOpacity = 0.5,
+              fillColor = ~colorQuantile("Reds", WHITE)(WHITE),
               popup = ~htmlEscape(tract_popup), 
               highlightOptions = highlightOptions(color = "white", weight = 2,
                                                   bringToFront = TRUE))
